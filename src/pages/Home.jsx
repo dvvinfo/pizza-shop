@@ -18,10 +18,11 @@ function Home  ()  {
         setItems(json);
         setIsLoader(false);
       });
+      window.scrollTo(0,0)
   }, []);
 
   return (
-    <>
+    <div className="container">
       <div className="content__top">
         <Categories />
         <Sort />
@@ -41,7 +42,7 @@ function Home  ()  {
               />
             ))}
       </div>
-    </>
+    </div>
   );
 };
 export default Home;
