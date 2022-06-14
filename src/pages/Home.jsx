@@ -14,20 +14,20 @@ import Paginations from "../components/Pagination";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Sort, { list } from "../components/Sort";
+import { fetchPizzas } from "../redux/slices/pizzaSlice";
 
 function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = useRef(false);
-  const isMounted =useRef(false);
+  const isMounted = useRef(false);
   const { categoryId, sort, currentPage } = useSelector(
     (state) => state.filter
   );
+  const { items, status } = useSelector((state) => state.pizza);
   // const categoryId = useSelector((state) => state.filter.categoryId);
   // const sortType = useSelector((state) => state.filter.sort.sortProperty);
   const { searchValue } = useContext(SearchContext);
-  const [items, setItems] = useState([]);
-  const [isLoader, setIsLoader] = useState(true);
 
   const ChangeCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -35,8 +35,7 @@ function Home() {
   const onChangePage = (number) => {
     dispatch(setCurrentPage(number));
   };
-  const fetchPizzas = () => {
-    setIsLoader(true);
+  const getPizzas = async () => {
     const order = sort.sortProperty.includes("-") ? "asc" : "desc";
     const sortBy = sort.sortProperty.replace("-", "");
     const category = categoryId > 0 ? `category=${categoryId}` : "";
@@ -50,25 +49,38 @@ function Home() {
     //     setItems(json);
     //     setIsLoader(false);
     //   });
-    axios
-      .get(
-        `https://6298b336f2decf5bb749749e.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoader(false);
-      });
-  }
+
+    // await axios
+    //   .get(
+    //     `https://6298b336f2decf5bb749749e.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}`
+    //   )
+    //   .then((res) => {
+    //     setItems(res.data);
+    //     setIsLoader(false);
+    //   })
+    // .catch((err) => {
+    //   setIsLoader(false);
+    // })
+
+    dispatch(
+      fetchPizzas({
+        sortBy,
+        order,
+        category,
+        currentPage,
+      })
+    );
+
+    window.scrollTo(0, 0);
+  };
   useEffect(() => {
     if (window.location.search) {
       const params = qs.parse(window.location.search.substring(1));
-      const sort = list.find(
-        (obj) => obj.sortProperty === params.sortProperty
-      );
+      const sort = list.find((obj) => obj.sortProperty === params.sortProperty);
       dispatch(
         setFilters({
           ...params,
-          sort
+          sort,
         })
       );
     }
@@ -76,25 +88,24 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if(!isSearch.current) {
-        fetchPizzas()
-    };
+    if (!isSearch.current) {
+      getPizzas();
+    }
     isSearch.current = false;
-    
+
     window.scrollTo(0, 0);
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   useEffect(() => {
-    if(isMounted.current) {
-        const queryString = qs.stringify({
-          sortProperty: sort.sortProperty,
-          categoryId,
-          currentPage,
-        });
-        navigate(`?${queryString}`);
-    };
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sort.sortProperty,
+        categoryId,
+        currentPage,
+      });
+      navigate(`?${queryString}`);
+    }
     isMounted.current = true;
-    
   }, [categoryId, sort.sortProperty, currentPage]);
 
   const pizzas = items
@@ -122,7 +133,23 @@ function Home() {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{isLoader ? skeletons : pizzas}</div>
+      {status === "error" ? (
+        <div className="content__error-info">
+          <h2>
+            Произошла ошибка<icon>😕</icon>
+          </h2>
+          <p>
+            К сожалени, неудалось получить пиццы.
+            <br/>
+            Попробуйте повторить попытку позже
+          </p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === "loading" ? skeletons : pizzas}
+        </div>
+      )}
+
       <Paginations currentPage={currentPage} onChangePage={onChangePage} />
     </div>
   );
