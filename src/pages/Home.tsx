@@ -1,7 +1,6 @@
 import { useEffect, useContext, useRef } from "react";
 import qs from "qs";
 import { useNavigate, Link} from "react-router-dom";
-import { SearchContext } from "../App";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectFilter,
@@ -16,7 +15,7 @@ import Skeleton from "../components/PizzaBlock/Skeleton";
 import Sort, { list } from "../components/Sort";
 import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzaSlice";
 
-function Home() {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = useRef(false);
@@ -26,11 +25,11 @@ function Home() {
   // const categoryId = useSelector((state) => state.filter.categoryId);
   // const sortType = useSelector((state) => state.filter.sort.sortProperty);
 
-  const ChangeCategory = (id) => {
+  const ChangeCategory = (id:number) => {
     dispatch(setCategoryId(id));
   };
-  const onChangePage = (number) => {
-    dispatch(setCurrentPage(number));
+  const onChangePage = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
   const getPizzas = async () => {
     const order = sort.sortProperty.includes("-") ? "asc" : "desc";
@@ -60,6 +59,7 @@ function Home() {
     // })
 
     dispatch(
+      //@ts-ignore
       fetchPizzas({
         sortBy,
         order,
@@ -107,7 +107,7 @@ function Home() {
 
   const pizzas = items
 
-    .filter((obj) => {
+    .filter((obj: any) => {
       if (
         obj.title
           .toString()
@@ -118,7 +118,7 @@ function Home() {
       }
       return false;
     })
-    .map((obj) => (
+    .map((obj: any) => (
       <Link key={obj.id} to={`/pizza/${obj.id}`}>
         <PizzaBlock key={obj.id} {...obj} />
       </Link>
@@ -130,14 +130,14 @@ function Home() {
   return (
     <div className="container">
       <div className="content__top">
-        <Categories value={categoryId} ChangeCategory={ChangeCategory} />
+        <Categories value={categoryId} ChangeCategory={ChangeCategory}  />
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       {status === "error" ? (
         <div className="content__error-info">
           <h2>
-            Произошла ошибка<icon>😕</icon>
+            Произошла ошибка<span>😕</span>
           </h2>
           <p>
             К сожалени, неудалось получить пиццы.

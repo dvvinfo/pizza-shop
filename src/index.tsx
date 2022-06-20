@@ -6,7 +6,10 @@ import { Provider } from "react-redux";
 import { store } from './redux/store';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElem = document.getElementById('root')
+
+if(rootElem ) {
+const root = ReactDOM.createRoot(rootElem );
 root.render(
   <React.StrictMode>
     <BrowserRouter>
@@ -16,6 +19,8 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+}
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

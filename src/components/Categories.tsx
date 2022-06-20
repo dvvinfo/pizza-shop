@@ -1,6 +1,10 @@
 
-function Categories({ value, ChangeCategory }) {
-  const categories = [
+type CategoriesProps = {
+  value:number;
+  ChangeCategory: (i:number) => void;
+
+};
+const categories = [
     "Все",
     "Мясные",
     "Вегетарианская",
@@ -8,6 +12,8 @@ function Categories({ value, ChangeCategory }) {
     "Острые",
     "Закрытые",
   ];
+const Categories:React.FC<CategoriesProps>=({ value, ChangeCategory }) => {
+  
 
   return (
     <div className="categories">

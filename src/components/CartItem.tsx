@@ -1,7 +1,17 @@
 import { useDispatch } from "react-redux";
 import {  addItem, mimusItem, removeItem, } from "../redux/slices/cartSlice";
 
-function CartItem({ id, title, type, size, price, count, imageUrl }) {
+type CartItemProps = {
+   id: string;
+   title: string;
+   type: string;
+   size: number;
+   price: number;
+   count: number;
+   imageUrl: string;
+}
+
+const CartItem: React.FC<CartItemProps> = ({ id, title, type, size, price, count, imageUrl }) => {
   const dispatch = useDispatch();
 
   // Добавление элемента в корзину

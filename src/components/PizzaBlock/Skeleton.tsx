@@ -1,5 +1,6 @@
 import React from "react";
 import ContentLoader from "react-content-loader";
+ //@ts-ignore
 const Skeleton = (props) => (
   <ContentLoader
     speed={2}
